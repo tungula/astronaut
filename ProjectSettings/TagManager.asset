@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Background
+  - Rock
+  - Oxygen
+  - Enemy1
+  - Star20
+  - Star50
+  - Iron
+  - Ground
+  - GroundLeftBorder
+  - GroundRightBorder
+  - Stone
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Oxygen
+  - Enemy1
+  - Iron
+  - GroundLeftBorder
+  - GroundRightBorder
+  - Player
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 2999287353
+    locked: 0
+  - name: Ground
+    uniqueID: 1737770389
+    locked: 0
+  - name: Other
+    uniqueID: 93601729
+    locked: 0
+  - name: FrontOfOther
+    uniqueID: 1010423493
+    locked: 0
+  - name: FrontOfOther2
+    uniqueID: 2003879087
+    locked: 0
+  - name: New Layer 6
+    uniqueID: 2632111041
+    locked: 0
