@@ -12,10 +12,12 @@ namespace Assets.Scripts
         static public void GenerateObjects(GeneratorModel model)
         {
             int width = RoundGeneratorParameters.Objects[model.Go].Width;
-            List<int> availableValues = GenerateAvailableIndexesArray(model.Y, width, true);
+            if (model.CopyCount.HasValue) width = width * model.CopyCount.Value;
+
+            List<int> availableValues = GenerateAvailableIndexesArray(model.Y, width, true, model.ParentRowIncludeNeighbor);
 
             if (model.ParentRowInclude.HasValue)
-                availableValues = GenerateAvailableIndexesArray(model.ParentRowInclude.Value, width, false);
+                availableValues = GenerateAvailableIndexesArray(model.ParentRowInclude.Value, width, false, model.ParentRowIncludeNeighbor);
 
             if (model.ParentRowExclude.HasValue)
                 availableValues = GenerateAvailableIndexesArray2(availableValues, model.ParentRowExclude.Value, model.ParentRowExcludeIndex, width);
@@ -25,7 +27,7 @@ namespace Assets.Scripts
             {
                 if (availableValues.Count == 0) break;
 
-                availableValues = ChooseAvailable(availableValues, width, model.Go, model.Y, model.MinDistanceWithNeighbor);
+                availableValues = ChooseAvailable(availableValues, width, model.Go, model.Y, model.MinDistanceWithNeighbor, !model.CopyCount.HasValue);
             }
 
             //DrawArray();
@@ -48,7 +50,7 @@ namespace Assets.Scripts
                     if (i == 0)
                         RoundGeneratorParameters.Round[model.Y, n + i] = model.Go;
                     else
-                        RoundGeneratorParameters.Round[model.Y, n + i] = 'v';
+                        RoundGeneratorParameters.Round[model.Y, n + i] = '-';
                 }
 
                 n += width;
@@ -57,7 +59,7 @@ namespace Assets.Scripts
             }
         }
 
-        static List<int> GenerateAvailableIndexesArray(int rowIndex, int width, bool exclude)
+        static List<int> GenerateAvailableIndexesArray(int rowIndex, int width, bool exclude, int? parentRowIncludeNeighbor)
         {
             List<int> availableIndexes = new List<int>();
 
@@ -69,17 +71,35 @@ namespace Assets.Scripts
             {
                 if (exclude)
                 {
-                    if (row[i] == 'o') availableIndexes.Add(i);
+                    if (row[i] == RoundGeneratorParameters.EmptySymbol) availableIndexes.Add(i);
                 }
                 else
                 {
-                    if (row[i] != 'o' && row[i] != 'x') availableIndexes.Add(i);
+                    if (
+                        (row[i] != RoundGeneratorParameters.EmptySymbol && row[i] != RoundGeneratorParameters.NotAllowedSymbol)
+                        || (IsValid(row, i, parentRowIncludeNeighbor))
+                       )
+                        availableIndexes.Add(i);
                 }
             }
 
             availableIndexes = RemoveValuesDepentOfWidth(availableIndexes, width);
 
             return availableIndexes;
+        }
+
+        static bool IsValid(List<char> row, int index, int? parentRowIncludeNeighbor)
+        {
+            if (!parentRowIncludeNeighbor.HasValue) return false;
+
+            for (int i = 0; i < parentRowIncludeNeighbor; i++)
+            {
+                if (index - i < 0) break;
+
+                if (row[index - i] != RoundGeneratorParameters.EmptySymbol && row[index - i] != RoundGeneratorParameters.NotAllowedSymbol)
+                    return true;
+            }
+            return false;
         }
 
         static List<int> GenerateAvailableIndexesArray2(List<int> indexes, int rowIndex, List<char> parentRowExcludeIndex, int width)
@@ -122,7 +142,7 @@ namespace Assets.Scripts
             return indexesResult;
         }
 
-        static List<int> ChooseAvailable(List<int> indexes, int width, char go, int y, int neibg)
+        static List<int> ChooseAvailable(List<int> indexes, int width, char go, int y, int neibg, bool fillWithV /*TODO*/)
         {
             Random r = new Random();
             int index = r.Next(0, indexes.Count);
@@ -134,7 +154,7 @@ namespace Assets.Scripts
                 indexes.TryRemove(value + i);
                 indexes.TryRemove(value - i);
 
-                if (i != 0) go = 'v';
+                if (fillWithV) { if (i != 0) go = '-'; }
                 RoundGeneratorParameters.Round[y, value + i] = go;
             }
 
@@ -154,10 +174,10 @@ namespace Assets.Scripts
                 for (int j = 0; j < RoundGeneratorParameters.RoundWidth; j++)
                 {
                     //თავიდანვე რომ არ ჩანდეს
-                    char symbol = 'o';
+                    char symbol = RoundGeneratorParameters.EmptySymbol;
 
                     if (i < RoundGeneratorParameters.RoundHeight - 1 && j < 15)
-                        symbol = 'x';
+                        symbol = RoundGeneratorParameters.NotAllowedSymbol;
 
                     RoundGeneratorParameters.Round[i, j] = symbol;
                 }

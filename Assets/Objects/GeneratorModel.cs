@@ -14,16 +14,15 @@ namespace Assets.Objects
         public int Y { get; set; }
         public int Count { get; set; }
 
-        /// <summary>
-        /// მშობელი Row, ითვალისწინებს მის მნიშვნელობებს. Random -ის გენერაციაში შედის ეს მნიშვნელობები, სხვები არა
-        /// </summary>
         public int? ParentRowInclude { get; set; }
+        public int? ParentRowIncludeNeighbor { get; set; }
 
 
         public int? ParentRowExclude { get; set; }
-        /// <summary>
-        /// რომელი ნომრები ამოაგდოს
-        /// </summary>
         public List<char> ParentRowExcludeIndex { get; set; }
+
+
+
+        public int? CopyCount { get; set; }
     }
 }

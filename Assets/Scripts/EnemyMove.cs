@@ -7,16 +7,21 @@ public class EnemyMove : MonoBehaviour
     public float runSpeed;
     private Vector3 v3 = Vector3.left;
 
-    // Start is called before the first frame update
+
+    private GameObject ParentPlayer;
+
     void Start()
     {
-        
+        ParentPlayer = GameObject.FindGameObjectWithTag("Player");
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += v3 * runSpeed * Time.deltaTime;
+        if ((gameObject.transform.position.x - ParentPlayer.transform.position.x) < 15)
+        {
+            transform.position += v3 * runSpeed * Time.deltaTime;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
