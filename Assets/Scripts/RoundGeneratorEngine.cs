@@ -14,20 +14,23 @@ namespace Assets.Scripts
             int width = RoundGeneratorParameters.Objects[model.Go].Width;
             if (model.CopyCount.HasValue) width = width * model.CopyCount.Value;
 
-            List<int> availableValues = GenerateAvailableIndexesArray(model.Y, width, true, model.ParentRowIncludeNeighbor);
+            if (RoundGeneratorParameters.Objects[model.Go].PositionY.HasValue) model.Y = RoundGeneratorParameters.Objects[model.Go].PositionY.Value;
+            if (RoundGeneratorParameters.Objects[model.Go].Count.HasValue) model.Count = RoundGeneratorParameters.Objects[model.Go].Count.Value;
+
+            List<int> availableValues = GenerateAvailableIndexesArray(model.Y, width, true, model.ParentRowIncludeNeighbor, RoundGeneratorParameters.Round);
 
             if (model.ParentRowInclude.HasValue)
-                availableValues = GenerateAvailableIndexesArray(model.ParentRowInclude.Value, width, false, model.ParentRowIncludeNeighbor);
+                availableValues = GenerateAvailableIndexesArray(model.ParentRowInclude.Value, width, false, model.ParentRowIncludeNeighbor, RoundGeneratorParameters.Round);
 
             if (model.ParentRowExclude.HasValue)
-                availableValues = GenerateAvailableIndexesArray2(availableValues, model.ParentRowExclude.Value, model.ParentRowExcludeIndex, width);
+                availableValues = GenerateAvailableIndexesArray2(availableValues, model.ParentRowExclude.Value, model.ParentRowExcludeIndex, width, RoundGeneratorParameters.Round);
 
 
             for (int i = 0; i < model.Count; i++)
             {
                 if (availableValues.Count == 0) break;
 
-                availableValues = ChooseAvailable(availableValues, width, model.Go, model.Y, model.MinDistanceWithNeighbor, !model.CopyCount.HasValue);
+                availableValues = ChooseAvailable(availableValues, width, model.Go, model.Y, model.MinDistanceWithNeighbor, !model.CopyCount.HasValue, RoundGeneratorParameters.Round);
             }
 
             //DrawArray();
@@ -59,12 +62,39 @@ namespace Assets.Scripts
             }
         }
 
-        static List<int> GenerateAvailableIndexesArray(int rowIndex, int width, bool exclude, int? parentRowIncludeNeighbor)
+        static public void GenerateStaticObjects(GeneratorModel model)
+        {
+            int width = RoundGeneratorParameters.Objects[model.Go].Width;
+            //if (model.CopyCount.HasValue) width = width * model.CopyCount.Value;
+
+            //if (RoundGeneratorParameters.Objects[model.Go].PositionY.HasValue) model.Y = RoundGeneratorParameters.Objects[model.Go].PositionY.Value;
+            //if (RoundGeneratorParameters.Objects[model.Go].Count.HasValue) model.Count = RoundGeneratorParameters.Objects[model.Go].Count.Value;
+
+            List<int> availableValues = GenerateAvailableIndexesArray(model.Y, width, true, model.ParentRowIncludeNeighbor, RoundGeneratorParameters.RoundStaticObjects);
+
+            //if (model.ParentRowInclude.HasValue)
+            //availableValues = GenerateAvailableIndexesArray(model.ParentRowInclude.Value, width, false, model.ParentRowIncludeNeighbor);
+
+            if (model.ParentRowExclude.HasValue)
+                availableValues = GenerateAvailableIndexesArray2(availableValues, model.ParentRowExclude.Value, model.ParentRowExcludeIndex, width, RoundGeneratorParameters.Round);
+
+
+            for (int i = 0; i < model.Count; i++)
+            {
+                if (availableValues.Count == 0) break;
+
+                availableValues = ChooseAvailableTemp(availableValues, width, model.Go, model.Y, model.MinDistanceWithNeighbor, !model.CopyCount.HasValue, RoundGeneratorParameters.RoundStaticObjects);
+            }
+
+            //DrawArray();
+        }
+
+        static List<int> GenerateAvailableIndexesArray(int rowIndex, int width, bool exclude, int? parentRowIncludeNeighbor, char[,] round)
         {
             List<int> availableIndexes = new List<int>();
 
-            List<char> row = Enumerable.Range(0, RoundGeneratorParameters.Round.GetLength(1))
-                 .Select(x => RoundGeneratorParameters.Round[rowIndex, x])
+            List<char> row = Enumerable.Range(0, round.GetLength(1))
+                 .Select(x => round[rowIndex, x])
                  .ToList();
 
             for (int i = 0; i < RoundGeneratorParameters.RoundWidth; i++)
@@ -102,17 +132,19 @@ namespace Assets.Scripts
             return false;
         }
 
-        static List<int> GenerateAvailableIndexesArray2(List<int> indexes, int rowIndex, List<char> parentRowExcludeIndex, int width)
+        static List<int> GenerateAvailableIndexesArray2(List<int> indexes, int rowIndex, List<char> parentRowExcludeIndex, int width, char[,] round)
         {
             List<int> availableIndexes = new List<int>();
 
-            List<char> row = Enumerable.Range(0, RoundGeneratorParameters.Round.GetLength(1))
-                   .Select(x => RoundGeneratorParameters.Round[rowIndex, x])
+            List<char> row = Enumerable.Range(0, round.GetLength(1))
+                   .Select(x => round[rowIndex, x])
                    .ToList();
 
             for (int i = 0; i < indexes.Count; i++)
             {
-                if (!parentRowExcludeIndex.Contains(row[indexes[i]]))
+                if (
+                    !parentRowExcludeIndex.Contains(row[indexes[i]]) && ((i + width) < indexes.Count && !parentRowExcludeIndex.Contains(row[indexes[i + width]]))
+                  )
                 {
                     availableIndexes.Add(indexes[i]);
                 }
@@ -142,7 +174,7 @@ namespace Assets.Scripts
             return indexesResult;
         }
 
-        static List<int> ChooseAvailable(List<int> indexes, int width, char go, int y, int neibg, bool fillWithV /*TODO*/)
+        static List<int> ChooseAvailable(List<int> indexes, int width, char go, int y, int neibg, bool fillWithV /*TODO*/, char[,] round)
         {
             Random r = new Random();
             int index = r.Next(0, indexes.Count);
@@ -155,13 +187,41 @@ namespace Assets.Scripts
                 indexes.TryRemove(value - i);
 
                 if (fillWithV) { if (i != 0) go = '-'; }
-                RoundGeneratorParameters.Round[y, value + i] = go;
+                round[y, value + i] = go;
             }
 
             for (int i = 0; i < neibg; i++)
             {
                 indexes.TryRemove(value + (width + i));
                 indexes.TryRemove(value - (width + i));
+            }
+
+            return indexes;
+        }
+
+        static List<int> ChooseAvailableTemp(List<int> indexes, int width, char go, int y, int neibg, bool fillWithV /*TODO*/, char[,] round)
+        {
+            Random r = new Random();
+            int index = r.Next(0, indexes.Count);
+
+            int value = indexes[index];
+
+            for (int i = 0; i < width; i++)
+            {
+                indexes.TryRemove(value + i);
+                indexes.TryRemove(value - i);
+
+                if (fillWithV) { if (i != 0) go = '-'; }
+                round[y, value + i] = go;
+            }
+
+            for (int i = 0; i < neibg; i++)
+            {
+                indexes.TryRemove(value + (width + i));
+                indexes.TryRemove(value - (width + i));
+
+                round.TrySet(y, value + (width + i), '+');
+                round.TrySet(y, value - (i + 1), '+');
             }
 
             return indexes;
@@ -180,6 +240,7 @@ namespace Assets.Scripts
                         symbol = RoundGeneratorParameters.NotAllowedSymbol;
 
                     RoundGeneratorParameters.Round[i, j] = symbol;
+                    RoundGeneratorParameters.RoundStaticObjects[i, j] = symbol;
                 }
             }
         }

@@ -27,10 +27,13 @@ public class PlayerMove : MonoBehaviour
     private float jumpTimeCounter;
     public float jumpTime;
 
+    AudioSource jumpSound;
+
     void Start()
     {
         rb2 = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        jumpSound = GetComponent<AudioSource>();
 
         jumpTimeCounter = jumpTime;
     }
@@ -51,7 +54,7 @@ public class PlayerMove : MonoBehaviour
 
         FixedUpdate1();
 
-        if (jumpCount == 2) canJump = false;
+        if (jumpCount == 1) canJump = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -59,6 +62,7 @@ public class PlayerMove : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy1") || collision.gameObject.CompareTag("Stone") || collision.gameObject.CompareTag("Rock"))
         {
             ResetJump();
+            anim.SetBool("IsJumping", false);
         }
 
         if (collision.gameObject.CompareTag("Enemy1") || collision.gameObject.CompareTag("Rock"))
@@ -129,6 +133,9 @@ public class PlayerMove : MonoBehaviour
                 rb2.velocity = new Vector2(rb2.velocity.x, jumpForce);
                 stoppedJumping = false;
                 jumpCount++;
+
+                anim.SetBool("IsJumping", true);
+                //jumpSound.Play();
             }
         }
 

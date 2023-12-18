@@ -4,22 +4,25 @@ using UnityEngine;
 
 public class ParalaxMove : MonoBehaviour
 {
-    public GameObject camera;
     public float parallaxEffect;
-    private float width, positionX;
+
+    private GameObject camera;
+    private float positionX;
+    private float cameraPositionX;
 
     // Start is called before the first frame update
     void Start()
     {
-        width = GetComponent<SpriteRenderer>().bounds.size.x;
+        camera = GameObject.FindGameObjectWithTag("MainCamera");
         positionX = transform.position.x;
+        cameraPositionX = camera.transform.position.x;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float parallaxDistance = camera.transform.position.x * parallaxEffect;
-        float remainingDistance = camera.transform.position.x * (1 - parallaxEffect);
+        float distance = camera.transform.position.x - cameraPositionX;
+        float parallaxDistance = distance * parallaxEffect;
 
         transform.position = new Vector3(positionX + parallaxDistance, transform.position.y, transform.position.z);
     }

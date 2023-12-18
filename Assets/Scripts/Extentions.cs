@@ -16,4 +16,15 @@ public static class Extentions
         }
         return list;
     }
+
+    public static void TrySet(this char[,] array, int y, int x, char value)
+    {
+        try
+        {
+            array[y, x] = value;
+        }
+        catch (Exception)
+        {
+        }
+    }
 }

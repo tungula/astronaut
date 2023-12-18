@@ -6,6 +6,7 @@ public class EnemyMove : MonoBehaviour
 {
     public float runSpeed;
     private Vector3 v3 = Vector3.left;
+    Animator anim;
 
 
     private GameObject ParentPlayer;
@@ -13,14 +14,17 @@ public class EnemyMove : MonoBehaviour
     void Start()
     {
         ParentPlayer = GameObject.FindGameObjectWithTag("Player");
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if ((gameObject.transform.position.x - ParentPlayer.transform.position.x) < 15)
+        if ((gameObject.transform.position.x - ParentPlayer.transform.position.x) < 20)
         {
             transform.position += v3 * runSpeed * Time.deltaTime;
+
+            anim.SetTrigger("start");
         }
     }
 

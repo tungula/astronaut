@@ -10,9 +10,11 @@ namespace Assets.Scripts
     public class RoundGeneratorParameters
     {
         public const int RoundHeight = 10;
-        public const int RoundWidth = 150;
+        public const int RoundWidth = 300;
         public static char[,] Round = new char[RoundHeight, RoundWidth];
+        public static char[,] RoundStaticObjects = new char[RoundHeight, RoundWidth];
         public static Dictionary<char, GameObjectParameterModel> Objects = new Dictionary<char, GameObjectParameterModel>();
+        public static Dictionary<char, GameObjectParameterModel> StaticObjects = new Dictionary<char, GameObjectParameterModel>();
         public static int GroundMinDistance = 2;
         public static int GroundMaxDistance = 5;
         public static char EmptySymbol = '.';
@@ -20,7 +22,8 @@ namespace Assets.Scripts
 
         public static void Generate()
         {
-            char[,] Round = new char[RoundHeight, RoundWidth];
+            Round = new char[RoundHeight, RoundWidth];
+            RoundStaticObjects = new char[RoundHeight, RoundWidth];
 
             RoundGeneratorEngine.PopulateArray();
             RoundGeneratorEngine.DrawArray();
@@ -28,7 +31,7 @@ namespace Assets.Scripts
 
             GenerateGround();
 
-            GeneratesRockes();
+            //GeneratesRockes();
 
             GeneratesOxygen();
 
@@ -37,6 +40,10 @@ namespace Assets.Scripts
             GeneratesEnemy();
 
             GeneratesIron();
+
+            GeneratePlanets();
+
+            GenerateMountains();
 
             RoundGeneratorEngine.DrawArray();
         }
@@ -72,8 +79,6 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'p',
-                Count = 5,
-                Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 0,
                 ParentRowExclude = RoundHeight - 1,
                 ParentRowExcludeIndex = new List<char>() { EmptySymbol }
@@ -84,7 +89,6 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'u',
-                Count = 3,
                 Y = RoundHeight - 4,
                 MinDistanceWithNeighbor = 3,
             });
@@ -93,7 +97,6 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'j',
-                Count = 3,
                 Y = RoundHeight - 4,
                 MinDistanceWithNeighbor = 3,
             });
@@ -103,7 +106,6 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'j',
-                Count = 3,
                 Y = RoundHeight - 7,
                 MinDistanceWithNeighbor = 3,
             });
@@ -112,7 +114,6 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'a',
-                Count = 6,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 3,
                 ParentRowExclude = RoundHeight - 1,
@@ -125,7 +126,6 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'b',
-                Count = 6,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 3,
                 ParentRowExclude = RoundHeight - 1,
@@ -137,7 +137,7 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'a',
-                Count = 6,
+                Count = 2,
                 Y = RoundHeight - 6,
                 MinDistanceWithNeighbor = 3,
 
@@ -167,10 +167,10 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'l',
-                Count = 5,
+                Count = 10,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 0,
-                ParentRowExclude = RoundHeight - 1,
+                ParentRowExclude = RoundHeight - 4,
                 ParentRowExcludeIndex = new List<char>() { EmptySymbol }
             });
 
@@ -178,10 +178,10 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'i',
-                Count = 5,
+                Count = 10,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 0,
-                ParentRowExclude = RoundHeight - 1,
+                ParentRowExclude = RoundHeight - 4,
                 ParentRowExcludeIndex = new List<char>() { EmptySymbol }
             });
 
@@ -190,10 +190,10 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 't',
-                Count = 3,
+                Count = 10,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 0,
-                ParentRowExclude = RoundHeight - 1,
+                ParentRowExclude = RoundHeight - 4,
                 ParentRowExcludeIndex = new List<char>() { EmptySymbol }
             });
 
@@ -202,10 +202,10 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'h',
-                Count = 3,
+                Count = 10,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 0,
-                ParentRowExclude = RoundHeight - 1,
+                ParentRowExclude = RoundHeight - 4,
                 ParentRowExcludeIndex = new List<char>() { EmptySymbol }
             });
 
@@ -218,7 +218,7 @@ namespace Assets.Scripts
                 Count = 3,
                 Y = RoundHeight - 2,
                 MinDistanceWithNeighbor = 0,
-                ParentRowExclude = RoundHeight - 1,
+                ParentRowExclude = RoundHeight - 4,
                 ParentRowExcludeIndex = new List<char>() { EmptySymbol }
             });
         }
@@ -229,8 +229,8 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'q',
-                Count = 4,
-                Y = RoundHeight - 5,
+                Count = 10,
+                Y = RoundHeight - 4,
                 MinDistanceWithNeighbor = 0,
                 CopyCount = 4
             });
@@ -239,8 +239,8 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'q',
-                Count = 3,
-                Y = RoundHeight - 5,
+                Count = 5,
+                Y = RoundHeight - 4,
                 MinDistanceWithNeighbor = 0,
                 CopyCount = 2
             });
@@ -249,8 +249,8 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'q',
-                Count = 10,
-                Y = RoundHeight - 5,
+                Count = 20,
+                Y = RoundHeight - 4,
                 MinDistanceWithNeighbor = 0,
                 CopyCount = 1
             });
@@ -259,16 +259,64 @@ namespace Assets.Scripts
             RoundGeneratorEngine.GenerateObjects(new GeneratorModel()
             {
                 Go = 'q',
-                Count = 20,
-                Y = RoundHeight - 8,
+                Count = 50,
+                Y = RoundHeight - 7,
                 MinDistanceWithNeighbor = 0,
 
-                ParentRowInclude = RoundHeight - 5,
+                ParentRowInclude = RoundHeight - 4,
                 ParentRowIncludeNeighbor = 3
 
 
                 //ParentRowExclude = RoundHeight - 5,
                 //ParentRowExcludeIndex = new List<char>() { 'q' }
+            });
+        }
+
+        public static void GeneratePlanets()
+        {
+            int pos = RoundWidth / 8;
+
+            RoundStaticObjects[1, 1 * pos] = 'a';
+            RoundStaticObjects[1, 2 * pos] = 'b';
+            RoundStaticObjects[1, 3 * pos] = 'c';
+            RoundStaticObjects[1, 4 * pos] = 'd';
+            RoundStaticObjects[1, 5 * pos] = 'e';
+            RoundStaticObjects[1, 6 * pos] = 'f';
+            RoundStaticObjects[1, 7 * pos] = 'g';
+            RoundStaticObjects[1, 8 * pos] = 'h';
+            
+        }
+
+        public static void GenerateMountains()
+        {
+            RoundGeneratorEngine.GenerateStaticObjects(new GeneratorModel()
+            {
+                Go = 'i',
+                Count = 10,
+                Y = RoundHeight - 2,
+                MinDistanceWithNeighbor = 10,
+                ParentRowExclude = RoundHeight - 1,
+                ParentRowExcludeIndex = new List<char>() { EmptySymbol }
+            });
+
+            RoundGeneratorEngine.GenerateStaticObjects(new GeneratorModel()
+            {
+                Go = 'j',
+                Count = 10,
+                Y = RoundHeight - 2,
+                MinDistanceWithNeighbor = 10,
+                ParentRowExclude = RoundHeight - 1,
+                ParentRowExcludeIndex = new List<char>() { EmptySymbol }
+            });
+
+            RoundGeneratorEngine.GenerateStaticObjects(new GeneratorModel()
+            {
+                Go = 'k',
+                Count = 10,
+                Y = RoundHeight - 2,
+                MinDistanceWithNeighbor = 10,
+                ParentRowExclude = RoundHeight - 1,
+                ParentRowExcludeIndex = new List<char>() { EmptySymbol }
             });
         }
     }

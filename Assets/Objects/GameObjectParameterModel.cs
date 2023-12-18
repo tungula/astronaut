@@ -12,6 +12,8 @@ namespace Assets.Objects
         public string Name { get; set; }
         public int Width { get; set; }
         public GameObject Go { get; set; }
-        public float HeightCorrection { get; set; }
+        public float HeightCorrection { get; set; } //თუ rigibody აქვს ეგ კიდია, კოლაიდერის პარამეტრები მუშაობს მაშინ
+        public int? PositionY { get; set; }
+        public int? Count { get; set; }
     }
 }
