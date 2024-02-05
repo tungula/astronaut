@@ -25,6 +25,9 @@ namespace Assets.Scripts
             if (model.ParentRowExclude.HasValue)
                 availableValues = GenerateAvailableIndexesArray2(availableValues, model.ParentRowExclude.Value, model.ParentRowExcludeIndex, width, RoundGeneratorParameters.Round);
 
+            if (model.ParentRowExcludeStatics.HasValue)
+                availableValues = GenerateAvailableIndexesArray3(availableValues, model.ParentRowExcludeStatics.Value, model.ParentRowExcludeIndexStatics, width, RoundGeneratorParameters.RoundStaticObjects);
+
 
             for (int i = 0; i < model.Count; i++)
             {
@@ -64,7 +67,7 @@ namespace Assets.Scripts
 
         static public void GenerateStaticObjects(GeneratorModel model)
         {
-            int width = RoundGeneratorParameters.Objects[model.Go].Width;
+            int width = RoundGeneratorParameters.StaticObjects[model.Go].Width;
             //if (model.CopyCount.HasValue) width = width * model.CopyCount.Value;
 
             //if (RoundGeneratorParameters.Objects[model.Go].PositionY.HasValue) model.Y = RoundGeneratorParameters.Objects[model.Go].PositionY.Value;
@@ -106,7 +109,7 @@ namespace Assets.Scripts
                 else
                 {
                     if (
-                        (row[i] != RoundGeneratorParameters.EmptySymbol && row[i] != RoundGeneratorParameters.NotAllowedSymbol)
+                        (row[i] != RoundGeneratorParameters.EmptySymbol && row[i] != RoundGeneratorParameters.NotAllowedSymbol && row[i - 1] != RoundGeneratorParameters.EmptySymbol && row[i - 2] != RoundGeneratorParameters.EmptySymbol)
                         || (IsValid(row, i, parentRowIncludeNeighbor))
                        )
                         availableIndexes.Add(i);
@@ -122,7 +125,7 @@ namespace Assets.Scripts
         {
             if (!parentRowIncludeNeighbor.HasValue) return false;
 
-            for (int i = 0; i < parentRowIncludeNeighbor; i++)
+            for (int i = 2; i < parentRowIncludeNeighbor; i++)
             {
                 if (index - i < 0) break;
 
@@ -133,6 +136,28 @@ namespace Assets.Scripts
         }
 
         static List<int> GenerateAvailableIndexesArray2(List<int> indexes, int rowIndex, List<char> parentRowExcludeIndex, int width, char[,] round)
+        {
+            List<int> availableIndexes = new List<int>();
+
+            List<char> row = Enumerable.Range(0, round.GetLength(1))
+                   .Select(x => round[rowIndex, x])
+                   .ToList();
+
+            for (int i = 0; i < indexes.Count; i++)
+            {
+                if (
+                    !parentRowExcludeIndex.Contains(row[indexes[i]]) && ((i + width) < indexes.Count && !parentRowExcludeIndex.Contains(row[indexes[i + width]]))
+                  )
+                {
+                    availableIndexes.Add(indexes[i]);
+                }
+            }
+
+            availableIndexes = RemoveValuesDepentOfWidth(availableIndexes, width);
+
+            return availableIndexes;
+        }
+        static List<int> GenerateAvailableIndexesArray3(List<int> indexes, int rowIndex, List<char> parentRowExcludeIndex, int width, char[,] round)
         {
             List<int> availableIndexes = new List<int>();
 

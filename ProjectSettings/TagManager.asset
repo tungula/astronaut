@@ -15,6 +15,25 @@ TagManager:
   - GroundLeftBorder
   - GroundRightBorder
   - Stone
+  - StoneDisableJump
+  - GroundBottomBorder
+  - ImgSelected
+  - ImgNotSelected
+  - Play
+  - PlanetLock
+  - PlanetLink
+  - PlayerWhite
+  - PlayerGreen
+  - PlayerPink
+  - Back
+  - Planet1
+  - Planet2
+  - Planet3
+  - Planet4
+  - Planet5
+  - Planet6
+  - Planet7
+  - Planet8
   layers:
   - Default
   - TransparentFX
@@ -28,7 +47,7 @@ TagManager:
   - GroundLeftBorder
   - GroundRightBorder
   - Player
-  - 
+  - GroundBottomBorder
   - 
   - 
   - 

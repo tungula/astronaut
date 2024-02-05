@@ -10,13 +10,11 @@ public class PlayerMove : MonoBehaviour
     public float runSpeed;
     Rigidbody2D rb2;
     public TextMeshProUGUI scoreText;
-    public Slider slider;
     public bool move;
 
     public GameObject PlayerBottom;
 
-    float points = 500f;
-    int life = 10;
+    public int life = 10;
 
     private int jumpCount = 0;
     private bool canJump = true;
@@ -29,13 +27,21 @@ public class PlayerMove : MonoBehaviour
 
     AudioSource jumpSound;
 
+    RoundGenerator cam;
+
+    public Image progressBar;
+    private float currentHealth;
+
     void Start()
     {
         rb2 = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         jumpSound = GetComponent<AudioSource>();
+        cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<RoundGenerator>();
 
         jumpTimeCounter = jumpTime;
+
+        currentHealth = 1;
     }
 
     // Update is called once per frame
@@ -48,9 +54,10 @@ public class PlayerMove : MonoBehaviour
             //jumpTimeCounter = jumpTime;
         }
 
-        points -= 50 * Time.deltaTime;
 
-        slider.value = points / 1000f;
+        currentHealth -= Time.deltaTime / 50f;
+
+        progressBar.fillAmount = currentHealth;
 
         FixedUpdate1();
 
@@ -63,9 +70,16 @@ public class PlayerMove : MonoBehaviour
         {
             ResetJump();
             anim.SetBool("IsJumping", false);
+
+        }
+        if (collision.gameObject.CompareTag("StoneDisableJump"))
+        {
+            anim.SetBool("IsJumping", false);
         }
 
-        if (collision.gameObject.CompareTag("Enemy1") || collision.gameObject.CompareTag("Rock"))
+
+
+        if (collision.gameObject.CompareTag("Enemy1") || collision.gameObject.CompareTag("Rock") || collision.gameObject.CompareTag("GroundBottomBorder"))
         {
             Kill();
         }
@@ -74,7 +88,8 @@ public class PlayerMove : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Oxygen"))
         {
-            points += 50;
+            currentHealth += 0.1f;
+            if (currentHealth > 1) currentHealth = 1;
             Destroy(collision.gameObject);
 
             scoreText.text = @"Life - " + life;
@@ -84,12 +99,6 @@ public class PlayerMove : MonoBehaviour
         if (collision.gameObject.CompareTag("Iron"))
         {
             Destroy(collision.gameObject);
-        }
-
-        if (collision.gameObject.CompareTag("Rock"))
-        {
-            life -= 1;
-            scoreText.text = @"Life - " + life;
         }
     }
 
@@ -130,6 +139,8 @@ public class PlayerMove : MonoBehaviour
         {
             if (canJump)
             {
+                rb2.gravityScale = 2;
+
                 rb2.velocity = new Vector2(rb2.velocity.x, jumpForce);
                 stoppedJumping = false;
                 jumpCount++;
@@ -161,6 +172,8 @@ public class PlayerMove : MonoBehaviour
             jumpTimeCounter = 0;
             stoppedJumping = true;
             jumpTimeCounter = jumpTime;
+
+            rb2.gravityScale = 1.5f;
         }
     }
 
@@ -168,5 +181,12 @@ public class PlayerMove : MonoBehaviour
     {
         //string currentSceneName = SceneManager.GetActiveScene().name;
         //SceneManager.LoadScene(currentSceneName);
+
+        life -= 1;
+        scoreText.text = @"Life - " + life;
+
+        gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 5, gameObject.transform.position.z);
+
+        //cam.RestartGame();
     }
 }
