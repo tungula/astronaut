@@ -16,13 +16,13 @@ public class PlayerMove : MonoBehaviour
 
     public int life = 10;
 
-    private int jumpCount = 0;
-    private bool canJump = true;
+    public int jumpCount = 0;
+    public bool canJump = true;
     Animator anim;
 
     public float jumpForce;
-    private bool stoppedJumping;
-    private float jumpTimeCounter;
+    public bool stoppedJumping;
+    public float jumpTimeCounter;
     public float jumpTime;
 
     AudioSource jumpSound;
@@ -115,6 +115,8 @@ public class PlayerMove : MonoBehaviour
 
     private void ResetJump()
     {
+        //Debug.Log("Jump is reset");
+
         jumpCount = 0;
         canJump = true;
 

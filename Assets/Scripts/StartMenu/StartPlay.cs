@@ -56,6 +56,11 @@ public class StartPlay : MonoBehaviour
         {
             VideoPlayer.GetComponent<VideoPlayer>().source = VideoSource.VideoClip;
         }
+        else if(Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            VideoPlayer.GetComponent<VideoPlayer>().source = VideoSource.Url;
+            VideoPlayer.GetComponent<VideoPlayer>().url = "http://46.49.107.53:8082/cosmo.mp4";
+        }
 
 #if UNITY_EDITOR
             GameState = 1;
@@ -86,6 +91,26 @@ public class StartPlay : MonoBehaviour
         }
     }
 
+    public void PlayButtonClick()
+    {
+        if (GameState == 1)
+        {
+            SetStage2();
+            GameState = 2;
+        }
+        else if (GameState == 2)
+        {
+            SetStage3();
+            GameState = 3;
+
+        }
+        else if (GameState == 3)
+        {
+            string currentSceneName = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene("Round1");
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -111,22 +136,22 @@ public class StartPlay : MonoBehaviour
 
                 if (hit.collider.transform.tag == "Play")
                 {
-                    if (GameState == 1)
-                    {
-                        SetStage2();
-                        GameState = 2;
-                    }
-                    else if (GameState == 2)
-                    {
-                        SetStage3();
-                        GameState = 3;
+                    //if (GameState == 1)
+                    //{
+                    //    SetStage2();
+                    //    GameState = 2;
+                    //}
+                    //else if (GameState == 2)
+                    //{
+                    //    SetStage3();
+                    //    GameState = 3;
 
-                    }
-                    else if (GameState == 3)
-                    {
-                        string currentSceneName = SceneManager.GetActiveScene().name;
-                        SceneManager.LoadScene("Round1");
-                    }
+                    //}
+                    //else if (GameState == 3)
+                    //{
+                    //    string currentSceneName = SceneManager.GetActiveScene().name;
+                    //    SceneManager.LoadScene("Round1");
+                    //}
 
                     //string currentSceneName = SceneManager.GetActiveScene().name;
                     //SceneManager.LoadScene("Round1");
